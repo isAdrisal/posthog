@@ -48,14 +48,13 @@ import {
     FilterLogicalOperator,
     FunnelCorrelation,
     HelpType,
-    InsightModel,
     InsightShortId,
-    InsightType,
     MultipleSurveyQuestion,
     PersonType,
     PropertyFilterType,
     PropertyFilterValue,
     PropertyGroupFilter,
+    QueryBasedInsightModel,
     RecordingDurationFilter,
     RecordingReportLoadTimes,
     RecordingUniversalFilters,
@@ -72,7 +71,9 @@ import type { eventUsageLogicType } from './eventUsageLogicType'
 export enum DashboardEventSource {
     LongPress = 'long_press',
     MoreDropdown = 'more_dropdown',
-    DashboardHeader = 'dashboard_header',
+    DashboardHeaderSaveDashboard = 'dashboard_header_save_dashboard',
+    DashboardHeaderDiscardChanges = 'dashboard_header_discard_changes',
+    DashboardHeaderExitFullscreen = 'dashboard_header_exit_fullscreen',
     Hotkey = 'hotkey',
     InputEnter = 'input_enter',
     Toast = 'toast',
@@ -295,7 +296,7 @@ export const eventUsageLogic = kea<eventUsageLogicType>([
         reportInsightCreated: (query: Node | null) => ({ query }),
         reportInsightSaved: (query: Node | null, isNewInsight: boolean) => ({ query, isNewInsight }),
         reportInsightViewed: (
-            insightModel: Partial<InsightModel>,
+            insightModel: Partial<QueryBasedInsightModel>,
             query: Node | null,
             isFirstLoad: boolean,
             delay?: number
@@ -368,7 +369,11 @@ export const eventUsageLogic = kea<eventUsageLogicType>([
             oldPropertyType?: string,
             newPropertyType?: string
         ) => ({ action, totalProperties, oldPropertyType, newPropertyType }),
-        reportDashboardViewed: (dashboard: DashboardType, lastRefreshed: Dayjs | null, delay?: number) => ({
+        reportDashboardViewed: (
+            dashboard: DashboardType<QueryBasedInsightModel>,
+            lastRefreshed: Dayjs | null,
+            delay?: number
+        ) => ({
             dashboard,
             delay,
             lastRefreshed,
@@ -689,7 +694,8 @@ export const eventUsageLogic = kea<eventUsageLogicType>([
 
             for (const item of dashboard.tiles || []) {
                 if (item.insight) {
-                    const key = `${item.insight.filters?.insight?.toLowerCase() || InsightType.TRENDS}_count`
+                    const query = isNodeWithSource(item.insight.query) ? item.insight.query.source : item.insight.query
+                    const key = `${query?.kind || !!item.text ? 'text' : 'empty'}_count`
                     if (!properties[key]) {
                         properties[key] = 1
                     } else {
