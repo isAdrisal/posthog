@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("posthog", "0459_convert_personsnode_insights_to_actorsquery"),
+        ("posthog", "0460_alertconfiguration_threshold_alertsubscription_and_more"),
     ]
 
     operations = [

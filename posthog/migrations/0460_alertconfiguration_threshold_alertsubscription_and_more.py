@@ -9,7 +9,7 @@ import posthog.models.utils
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("posthog", "0460_alertconfiguration_threshold_alertsubscription_and_more"),
+        ("posthog", "0459_convert_personsnode_insights_to_actorsquery"),
     ]
 
     operations = [
