@@ -95,7 +95,6 @@ jobs:
             - name: Container image digest
               run: echo ${{ steps.docker_build.outputs.digest }}
 
-
     deploy:
         name: Deploy capture-replay
         runs-on: ubuntu-latest
@@ -125,5 +124,6 @@ jobs:
                         "release": "capture-replay",
                         "commit": ${{ toJson(github.event.head_commit) }},
                         "repository": ${{ toJson(github.repository) }},
-                        "labels": []
+                        "labels": [],
+                        "timestamp": "${{ github.event.head_commit.timestamp }}"
                       }
